@@ -23,6 +23,7 @@ window.APP_CONFIG = {
   // true = บังคับกรอกอีเมล
   REQUIRE_EMAIL: false,
 
-  // true = แสดงผลลัพธ์ให้ผู้ทำแบบประเมินเห็นทันทีหลังส่ง
-  SHOW_RESULT_TO_CANDIDATE: true,
+  // true  = ผู้สมัครเห็นผลสีของตัวเองทันทีหลังส่ง
+  // false = ผู้สมัครเห็นแค่หน้าขอบคุณ ไม่บอกว่าได้สีอะไร (ผลดูได้เฉพาะ HR)
+  SHOW_RESULT_TO_CANDIDATE: false,
 };

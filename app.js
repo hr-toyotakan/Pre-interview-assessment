@@ -213,10 +213,15 @@
   function renderThanks() {
     var hero = el("hero");
     hero.style.background = "linear-gradient(135deg, #f79ea8 0%, #f2894f 100%)";
-    el("hero-kicker").textContent = "ส่งคำตอบเรียบร้อย";
-    el("hero-title").textContent = "ขอบคุณครับ/ค่ะ";
-    el("hero-tag").textContent = "ทีมงานจะนำผลไปใช้ประกอบการสัมภาษณ์ต่อไป";
+    el("hero-kicker").textContent = "ส่งแบบประเมินเรียบร้อย";
+    el("hero-title").textContent = "ขอบคุณที่สละเวลา 🙏";
+    el("hero-tag").textContent = "ทีมงานจะนำข้อมูลไปใช้ประกอบการสัมภาษณ์ต่อไป";
+
+    el("thanks-name").textContent = state.profile.full_name +
+      (state.profile.position ? " · " + state.profile.position : "");
+
     el("result-detail").classList.add("hidden");
+    el("thanks-note").classList.remove("hidden");
   }
 
   function renderResult(s, order) {
