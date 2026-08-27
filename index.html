@@ -89,7 +89,10 @@
   <section id="screen-quiz" class="hidden">
     <div class="card">
       <div class="progress"><i id="progress-fill"></i></div>
-      <div class="progress-label" id="progress-label">ตอบแล้ว 0 จาก 9 ข้อ</div>
+      <div class="progress-label">
+        <span id="progress-label">ตอบแล้ว 0 จาก 9 ข้อ</span>
+        <span class="elapsed">⏱ เวลารวม <strong id="elapsed">0:00</strong></span>
+      </div>
 
       <div class="timer hidden" id="timer">
         <div class="timer-track"><i id="timer-fill"></i></div>
@@ -126,6 +129,7 @@
       <p class="pill" id="thanks-name">—</p>
       <div class="sect">
         <h3>✅ เราได้รับคำตอบของคุณเรียบร้อยแล้ว</h3>
+        <p class="muted" id="time-used">⏱ ใช้เวลาทำทั้งหมด —</p>
       </div>
     </div>
 

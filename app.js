@@ -23,6 +23,24 @@
     startedAt: null,
   };
 
+  // 95 -> "1:35"  |  3725 -> "1:02:05"
+  function fmtDuration(sec) {
+    sec = Math.max(0, Math.floor(sec || 0));
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    var pad = function (n) { return n < 10 ? "0" + n : String(n); };
+    return h ? h + ":" + pad(m) + ":" + pad(s) : m + ":" + pad(s);
+  }
+
+  // 95 -> "1 นาที 35 วินาที"
+  function fmtDurationThai(sec) {
+    sec = Math.max(0, Math.floor(sec || 0));
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return (m ? m + " นาที " : "") + s + " วินาที";
+  }
+
   function timeLimit() {
     var n = Number(CFG.QUESTION_TIME_LIMIT);
     return isFinite(n) && n > 0 ? n : 0;
@@ -128,6 +146,7 @@
       state.seen = {};
       state.queue = QUESTIONS.map(function (_, i) { return i; });
       show("screen-quiz");
+      startElapsed();
       nextQuestion();
     });
   }
@@ -188,6 +207,22 @@
     setTimeout(nextQuestion, 250);
   }
 
+  // ---------- นาฬิกาจับเวลารวมทั้งแบบประเมิน ----------
+
+  function startElapsed() {
+    stopElapsed();
+    paintElapsed();
+    state.elapsedId = setInterval(paintElapsed, 500);
+  }
+
+  function stopElapsed() {
+    if (state.elapsedId) { clearInterval(state.elapsedId); state.elapsedId = null; }
+  }
+
+  function paintElapsed() {
+    el("elapsed").textContent = fmtDuration((Date.now() - state.startedAt) / 1000);
+  }
+
   // ---------- ตัวจับเวลารายข้อ ----------
 
   function startTimer() {
@@ -234,6 +269,9 @@
   // ---------- สรุปผล + บันทึก ----------
 
   function finish() {
+    stopTimer();
+    stopElapsed();
+
     var s = score(state.answers);
     var order = ranked(s);
     var payload = Object.assign({}, state.profile, {
@@ -244,6 +282,8 @@
       duration_seconds: Math.round((Date.now() - state.startedAt) / 1000),
       user_agent: navigator.userAgent,
     });
+
+    el("time-used").textContent = "⏱ ใช้เวลาทำทั้งหมด " + fmtDurationThai(payload.duration_seconds);
 
     // "full" = เห็นทั้งหมด | "color" = บอกแค่สี | "none"/false = ไม่บอกสี
     var mode = CFG.SHOW_RESULT_TO_CANDIDATE;

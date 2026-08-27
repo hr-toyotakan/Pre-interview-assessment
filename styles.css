@@ -161,7 +161,16 @@ input:focus, select:focus, textarea:focus {
   border-radius: 999px;
   transition: width .3s ease;
 }
-.progress-label { font-size: 14px; color: var(--ink-soft); text-align: right; }
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.progress-label .elapsed { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.progress-label .elapsed strong { color: var(--ink); }
 
 /* ---------- rules box (หน้าแรก) ---------- */
 

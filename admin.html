@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
@@ -77,7 +77,7 @@
               <th>วันที่</th><th>ชื่อ-นามสกุล</th><th class="col-position">ตำแหน่ง</th>
               <th>สีหลัก</th><th>สีรอง</th>
               <th>แดง</th><th>ฟ้า</th><th>เหลือง</th><th>เขียว</th>
-              <th>ติดต่อ</th>
+              <th>เวลาที่ใช้</th><th>ติดต่อ</th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
@@ -111,6 +111,14 @@
     });
   }
 
+  // 95 -> "1:35"
+  function fmtDuration(sec) {
+    if (sec == null) return "-";
+    sec = Math.max(0, Math.floor(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return m + ":" + (s < 10 ? "0" + s : s);
+  }
+
   function show(id) {
     ["screen-login", "screen-data"].forEach(function (s) {
       el(s).classList.toggle("hidden", s !== id);
@@ -142,14 +150,14 @@
 
   // ---------- data ----------
   function load() {
-    el("rows").innerHTML = '<tr><td colspan="10">กำลังโหลด...</td></tr>';
+    el("rows").innerHTML = '<tr><td colspan="11">กำลังโหลด...</td></tr>';
     client.from("assessment_responses")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(1000)
       .then(function (res) {
         if (res.error) {
-          el("rows").innerHTML = '<tr><td colspan="10">โหลดข้อมูลไม่สำเร็จ: ' + esc(res.error.message) + "</td></tr>";
+          el("rows").innerHTML = '<tr><td colspan="11">โหลดข้อมูลไม่สำเร็จ: ' + esc(res.error.message) + "</td></tr>";
           return;
         }
         all = res.data || [];
@@ -182,7 +190,7 @@
 
     // ตาราง
     if (!data.length) {
-      el("rows").innerHTML = '<tr><td colspan="10">ยังไม่มีข้อมูล</td></tr>';
+      el("rows").innerHTML = '<tr><td colspan="11">ยังไม่มีข้อมูล</td></tr>';
     } else {
       el("rows").innerHTML = data.map(function (r, i) {
         var s = r.scores || {};
@@ -194,6 +202,7 @@
           "<td>" + ((P[r.secondary_color] || {}).name || "-") + "</td>" +
           "<td>" + (s.red || 0) + "</td><td>" + (s.blue || 0) + "</td>" +
           "<td>" + (s.yellow || 0) + "</td><td>" + (s.green || 0) + "</td>" +
+          "<td>" + fmtDuration(r.duration_seconds) + "</td>" +
           "<td>" + esc(r.email || r.phone || "-") + "</td>" +
         "</tr>";
       }).join("");
@@ -228,9 +237,9 @@
 
     var row = document.createElement("tr");
     row.className = "detail-row";
-    row.innerHTML = '<td colspan="10" class="detail">' +
+    row.innerHTML = '<td colspan="11" class="detail">' +
       "<p><strong>" + esc(r.full_name) + "</strong> · " + esc(r.position || "-") +
-      " · ใช้เวลา " + (r.duration_seconds || "-") + " วินาที · " +
+      " · ใช้เวลา " + fmtDuration(r.duration_seconds) + " นาที · " +
       esc(r.email || "-") + " · " + esc(r.phone || "-") + "</p>" +
       "<table>" + cells + "</table></td>";
     tr.after(row);
@@ -240,7 +249,8 @@
   el("btn-csv").addEventListener("click", function () {
     var data = filtered();
     var head = ["วันที่", "ชื่อ-นามสกุล", "ชื่อเล่น", "ตำแหน่ง", "อีเมล", "เบอร์โทร",
-                "สีหลัก", "สีรอง", "แดง", "ฟ้า", "เหลือง", "เขียว", "เวลา(วินาที)"];
+                "สีหลัก", "สีรอง", "แดง", "ฟ้า", "เหลือง", "เขียว",
+                "เวลาที่ใช้", "เวลา(วินาที)"];
     window.QUESTIONS.forEach(function (q) { head.push("ข้อ" + q.no); });
 
     var lines = [head];
@@ -250,7 +260,8 @@
         new Date(r.created_at).toLocaleString("th-TH"),
         r.full_name, r.nickname, r.position, r.email, r.phone,
         (P[r.primary_color] || {}).name, (P[r.secondary_color] || {}).name,
-        s.red || 0, s.blue || 0, s.yellow || 0, s.green || 0, r.duration_seconds
+        s.red || 0, s.blue || 0, s.yellow || 0, s.green || 0,
+        fmtDuration(r.duration_seconds), r.duration_seconds
       ];
       window.QUESTIONS.forEach(function (q) { row.push(a[String(q.no)] || ""); });
       lines.push(row);
