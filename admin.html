@@ -185,7 +185,7 @@
       '<div class="stat"><div class="n">' + data.length + '</div><div class="l">ผู้ทำแบบประเมิน</div></div>' +
       window.COLOR_ORDER.map(function (c) {
         return '<div class="stat"><div class="n" style="color:' + P[c].hex + '">' + counts[c] +
-               '</div><div class="l">' + P[c].name + " · " + P[c].title.split(" (")[0] + "</div></div>";
+               '</div><div class="l">' + P[c].name + " · " + P[c].title.split(" / ")[0] + "</div></div>";
       }).join("");
 
     // ตาราง
