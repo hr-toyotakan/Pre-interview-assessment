@@ -384,7 +384,6 @@
 
   function renderResult(s, order) {
     var p = PROFILES[order[0]];
-    var second = PROFILES[order[1]];
 
     var hero = el("hero");
     hero.style.background = "linear-gradient(135deg, " + p.hex + " 0%, " + shade(p.hex, -18) + " 100%)";
@@ -395,21 +394,8 @@
 
     paintBars("bars", s, order);
 
-    el("res-summary").textContent = p.summary;
     fillList("res-strengths", p.strengths);
     fillList("res-watchouts", p.watchouts);
-    el("res-workstyle").textContent = p.workStyle;
-    el("res-roles").textContent = p.fitRoles;
-
-    var blend = el("res-blend");
-    if (s[order[1]] > 0 && s[order[1]] >= s[order[0]] - 1) {
-      blend.classList.remove("hidden");
-      el("res-blend-text").textContent =
-        "คุณมีบุคลิก " + second.name + " (" + second.title + ") เป็นสีรองที่ใกล้เคียงกันมาก — " +
-        "แปลว่าคุณปรับสไตล์ระหว่าง “" + p.tagline + "” และ “" + second.tagline + "” ได้ตามสถานการณ์";
-    } else {
-      blend.classList.add("hidden");
-    }
 
     el("res-name").textContent = state.profile.full_name +
       (state.profile.position ? " · " + state.profile.position : "");
