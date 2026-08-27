@@ -5,59 +5,65 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>แบบประเมินบุคลิกภาพ</title>
 <meta name="description" content="แบบประเมินบุคลิกภาพ 4 สี สำหรับผู้สมัครงาน">
+<meta name="theme-color" content="#1f3b73">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="wrap">
+<header class="appbar no-print">
+  <div class="appbar-inner">
+    <div class="brand-mark" id="brand-mark">HR</div>
+    <div class="brand-text">
+      <span class="brand-org" id="org-name-top">ฝ่ายทรัพยากรบุคคล</span>
+      <span class="brand-title" id="app-title">แบบประเมินบุคลิกภาพ</span>
+    </div>
+  </div>
+</header>
 
-  <header class="masthead no-print">
-    <div class="badge">?</div>
-    <h1 id="app-title">แบบประเมินบุคลิกภาพ</h1>
-    <div class="puzzle">🧩</div>
-  </header>
+<div class="wrap">
 
   <!-- =================== หน้าแรก =================== -->
   <section id="screen-intro">
     <div class="card">
-      <h2>เราเป็นคนแบบไหน?</h2>
-      <p class="muted">
-        แบบประเมินนี้มี <strong>9 ข้อ</strong> ไม่มีข้อไหนถูกหรือผิด
-        ขอให้เลือกข้อที่ “ตรงกับตัวคุณมากที่สุด” โดยไม่ต้องคิดนาน
-        ผลลัพธ์จะช่วยให้ทีม <span id="org-name">ฝ่ายทรัพยากรบุคคล</span>
-        เข้าใจสไตล์การทำงานของคุณ
+      <h2>แบบประเมินบุคลิกภาพผู้สมัครงาน</h2>
+      <p class="lead">
+        แบบประเมินนี้มี 9 ข้อ ไม่มีคำตอบถูกหรือผิด
+        กรุณาเลือกข้อที่ตรงกับตัวท่านมากที่สุดโดยไม่ต้องใช้เวลาไตร่ตรองนาน
+        ผลที่ได้จะใช้เป็นข้อมูลประกอบการพูดคุยของ<span id="org-name">ฝ่ายทรัพยากรบุคคล</span>เท่านั้น
       </p>
 
+      <div id="config-warning" class="status warn hidden">
+        ยังไม่ได้ตั้งค่า Supabase ในไฟล์ <code>config.js</code> — ระบบทำงานในโหมดทดสอบ (ไม่บันทึกผล)
+      </div>
+
       <div class="rules" id="rules">
-        <strong>⏱ กติกา</strong>
+        <div class="rules-title">ข้อกำหนดในการทำแบบประเมิน</div>
         <ul>
-          <li>แต่ละข้อมีเวลา <strong id="rule-seconds">15</strong> วินาที</li>
-          <li>หมดเวลาจะข้ามไปข้อถัดไปทันที <u>ย้อนกลับไม่ได้</u></li>
-          <li>ข้อที่ตอบไม่ทันจะวนกลับมาให้ทำใหม่จนกว่าจะครบทุกข้อ</li>
+          <li>แต่ละข้อมีเวลาตอบ <strong id="rule-seconds">15</strong> วินาที</li>
+          <li>เมื่อหมดเวลาระบบจะข้ามไปข้อถัดไปทันที และไม่สามารถย้อนกลับได้</li>
+          <li>ข้อที่ตอบไม่ทันจะถูกนำกลับมาถามใหม่จนกว่าจะตอบครบทุกข้อ</li>
         </ul>
       </div>
 
-      <div id="config-warning" class="status warn hidden">
-        ⚠️ ยังไม่ได้ตั้งค่า Supabase ใน <code>config.js</code> — ระบบจะทำงานในโหมดทดสอบ (ไม่บันทึกผล)
-      </div>
+      <hr class="divider">
 
       <form id="intro-form" autocomplete="on">
         <div class="field">
           <label for="f-name">ชื่อ-นามสกุล <span class="req">*</span></label>
-          <input type="text" id="f-name" name="name" required placeholder="เช่น สมชาย ใจดี">
+          <input type="text" id="f-name" name="name" required placeholder="กรอกชื่อและนามสกุล">
         </div>
 
         <div class="field">
           <label for="f-nickname">ชื่อเล่น</label>
-          <input type="text" id="f-nickname" name="nickname" placeholder="เช่น ชาย">
+          <input type="text" id="f-nickname" name="nickname" placeholder="ไม่บังคับ">
         </div>
 
         <div class="field hidden" id="position-field">
           <label for="f-position">ตำแหน่งที่สมัคร <span class="req">*</span></label>
-          <input type="text" id="f-position" name="position" placeholder="เช่น เจ้าหน้าที่การตลาด">
+          <input type="text" id="f-position" name="position" placeholder="ระบุตำแหน่งที่สมัคร">
         </div>
 
         <div class="field">
@@ -73,13 +79,13 @@
         <label class="consent">
           <input type="checkbox" required>
           <span>
-            ข้าพเจ้ายินยอมให้เก็บและใช้ข้อมูลนี้เพื่อประกอบการพิจารณารับสมัครงานเท่านั้น
-            และรับทราบว่าผลการประเมินเป็นเพียงข้อมูลประกอบ ไม่ใช่การตัดสินความสามารถ
+            ข้าพเจ้ายินยอมให้จัดเก็บและใช้ข้อมูลนี้เพื่อประกอบการพิจารณารับสมัครงานเท่านั้น
+            และรับทราบว่าผลการประเมินเป็นข้อมูลประกอบ มิใช่เกณฑ์ตัดสินความสามารถ
           </span>
         </label>
 
         <div class="btn-row">
-          <button type="submit" class="btn btn-primary">เริ่มทำแบบประเมิน →</button>
+          <button type="submit" class="btn btn-primary btn-block">เริ่มทำแบบประเมิน</button>
         </div>
       </form>
     </div>
@@ -91,7 +97,7 @@
       <div class="progress"><i id="progress-fill"></i></div>
       <div class="progress-label">
         <span id="progress-label">ตอบแล้ว 0 จาก 9 ข้อ</span>
-        <span class="elapsed">⏱ เวลารวม <strong id="elapsed">0:00</strong></span>
+        <span class="elapsed">เวลารวม <strong id="elapsed">0:00</strong></span>
       </div>
 
       <div class="countdown hidden" id="timer">
@@ -107,14 +113,14 @@
 
       <div class="q-head">
         <div class="q-num" id="q-num">1</div>
-        <p class="q-title">ข้อใดตรงกับตัวคุณมากที่สุด?</p>
-        <span class="retry-tag hidden" id="retry-tag">🔁 ข้อที่ตอบไม่ทัน</span>
+        <p class="q-title">ข้อใดตรงกับตัวท่านมากที่สุด</p>
+        <span class="retry-tag hidden" id="retry-tag">ข้อที่ตอบไม่ทัน</span>
       </div>
 
       <div class="options" id="options"></div>
 
       <div class="status err hidden" id="timeout-msg">
-        ⏱ หมดเวลา — ข้อนี้จะวนกลับมาให้ทำใหม่อีกครั้ง
+        หมดเวลา — ข้อนี้จะถูกนำกลับมาถามใหม่อีกครั้ง
       </div>
     </div>
   </section>
@@ -123,19 +129,20 @@
   <section id="screen-result" class="hidden">
 
     <div class="hero" id="hero">
-      <p class="kicker" id="hero-kicker">บุคลิกภาพเด่นของคุณคือ</p>
+      <p class="kicker" id="hero-kicker">ผลการประเมิน</p>
       <h2 id="hero-title">—</h2>
       <p class="tag" id="hero-tag">—</p>
     </div>
 
     <div id="save-status" class="status warn">กำลังบันทึกผล...</div>
 
-    <!-- แสดงเมื่อ SHOW_RESULT_TO_CANDIDATE = false -->
+    <!-- แสดงเมื่อไม่เปิดผลแบบเต็ม -->
     <div class="card hidden" id="thanks-note">
       <p class="pill" id="thanks-name">—</p>
       <div class="sect">
-        <h3>✅ เราได้รับคำตอบของคุณเรียบร้อยแล้ว</h3>
-        <p class="muted" id="time-used">⏱ ใช้เวลาทำทั้งหมด —</p>
+        <h3>สถานะ</h3>
+        <p>ระบบได้รับคำตอบของท่านเรียบร้อยแล้ว</p>
+        <p class="muted" id="time-used" style="margin-top:6px">ใช้เวลาทำทั้งหมด —</p>
       </div>
     </div>
 
@@ -143,49 +150,50 @@
       <p class="pill" id="res-name">—</p>
 
       <div class="sect">
-        <h3>📊 คะแนนแต่ละสี (เต็ม 9)</h3>
+        <h3>คะแนนแต่ละสี (เต็ม 9)</h3>
         <div class="bars" id="bars"></div>
       </div>
 
       <div class="sect">
-        <h3>🧭 ภาพรวม</h3>
+        <h3>ภาพรวม</h3>
         <p id="res-summary">—</p>
       </div>
 
       <div class="sect hidden" id="res-blend">
-        <h3>🎨 สีรองที่ผสมอยู่</h3>
+        <h3>บุคลิกภาพสีรอง</h3>
         <p id="res-blend-text">—</p>
       </div>
 
       <div class="sect">
-        <h3>💪 จุดแข็ง</h3>
+        <h3>จุดแข็ง</h3>
         <ul id="res-strengths"></ul>
       </div>
 
       <div class="sect">
-        <h3>⚠️ สิ่งที่ควรระวัง</h3>
+        <h3>สิ่งที่ควรระวัง</h3>
         <ul id="res-watchouts"></ul>
       </div>
 
       <div class="sect">
-        <h3>🧑‍💻 สไตล์การทำงาน</h3>
+        <h3>สไตล์การทำงาน</h3>
         <p id="res-workstyle">—</p>
       </div>
 
       <div class="sect">
-        <h3>🎯 ลักษณะงานที่มักเหมาะ</h3>
+        <h3>ลักษณะงานที่มักเหมาะ</h3>
         <p id="res-roles">—</p>
       </div>
 
       <div class="btn-row no-print">
-        <button type="button" class="btn btn-primary" id="btn-print">🖨️ บันทึก / พิมพ์ผล</button>
+        <button type="button" class="btn btn-ghost" id="btn-print">บันทึก / พิมพ์ผล</button>
         <button type="button" class="btn btn-ghost" id="btn-restart">ทำแบบประเมินใหม่</button>
       </div>
     </div>
   </section>
 
   <p class="foot no-print">
-    แบบประเมินบุคลิกภาพ 4 สี · ใช้ประกอบการสัมภาษณ์งานเท่านั้น
+    แบบประเมินบุคลิกภาพ 4 สี · ใช้ประกอบการสัมภาษณ์งานเท่านั้น<br>
+    ข้อมูลของท่านได้รับการคุ้มครองตามนโยบายคุ้มครองข้อมูลส่วนบุคคล
   </p>
 
 </div>
