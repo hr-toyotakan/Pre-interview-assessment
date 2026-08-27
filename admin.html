@@ -73,7 +73,7 @@
   <section id="screen-data" class="hidden">
     <div class="card">
       <div class="toolbar no-print">
-        <input type="text" id="q-search" placeholder="ค้นหาชื่อ / ตำแหน่ง">
+        <input type="text" id="q-search" placeholder="ค้นหาชื่อ">
         <select id="q-color" style="width:auto">
           <option value="">ทุกสี</option>
           <option value="red">สีแดง</option>
@@ -199,7 +199,8 @@
     return all.filter(function (r) {
       if (c && r.primary_color !== c) return false;
       if (!q) return true;
-      return ((r.full_name || "") + " " + (r.nickname || "") + " " + (r.position || "")).toLowerCase().indexOf(q) > -1;
+      // ค้นหาจากชื่อ-นามสกุล และชื่อเล่นเท่านั้น
+      return ((r.full_name || "") + " " + (r.nickname || "")).toLowerCase().indexOf(q) > -1;
     });
   }
 
