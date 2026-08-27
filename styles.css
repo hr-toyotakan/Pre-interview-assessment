@@ -271,10 +271,25 @@ tbody tr:hover { background: #fafbff; }
 @media (max-width: 560px) {
   body { font-size: 16px; }
   .card { padding: 20px 18px; }
-  .masthead { border-radius: 22px; padding: 12px 18px; }
+  .masthead { border-radius: 22px; padding: 12px 16px; gap: 10px; }
   .masthead h1 { font-size: 17px; }
+  .masthead .badge { width: 36px; height: 36px; flex-basis: 36px; font-size: 17px; }
+  .masthead .puzzle { font-size: 24px; }
   .hero h2 { font-size: 26px; }
   .bar-row { grid-template-columns: 76px 1fr 40px; }
+}
+
+/* จอแคบมาก (เช่น หน้าต่างเล็ก หรือมือถือรุ่นเล็ก) - กันหัวเรื่องแตกเป็นหลายบรรทัด */
+@media (max-width: 380px) {
+  .wrap { padding: 16px 12px 48px; }
+  .masthead { padding: 10px 12px; gap: 8px; }
+  .masthead h1 { font-size: 15px; line-height: 1.35; }
+  .masthead .badge { width: 30px; height: 30px; flex-basis: 30px; font-size: 15px; border-width: 2px; }
+  .masthead .puzzle { font-size: 20px; }
+  .card { padding: 18px 14px; }
+  .hero { padding: 24px 18px; }
+  .hero h2 { font-size: 23px; }
+  .opt { padding: 14px 14px; font-size: 16px; gap: 10px; }
 }
 
 @media print {
