@@ -348,8 +348,7 @@
       "linear-gradient(135deg, " + p.hex + " 0%, " + shade(p.hex, -18) + " 100%)";
     el("hero-kicker").textContent = "บุคลิกภาพเด่นของคุณคือ";
     el("hero-title").textContent = p.name + " — " + p.title;
-    el("hero-tag").classList.remove("hidden");
-    el("hero-tag").textContent = "บุคลิก: " + p.tagline;
+    el("hero-tag").classList.add("hidden");   // ไม่แสดงบรรทัดคำอธิบายบุคลิก
 
     el("thanks-name").textContent = state.profile.full_name +
       (state.profile.position ? " · " + state.profile.position : "");
