@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ผลแบบประเมิน · สำหรับ HR</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .wrap { max-width: 1080px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .stat { background: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+  .stat .n { font-size: 26px; font-weight: 800; line-height: 1.2; }
+  .stat .l { font-size: 13px; color: var(--ink-soft); }
+  .detail { background: #fbfcff; border-left: 3px solid var(--blue); padding: 14px 16px; font-size: 14px; white-space: normal; }
+  .detail table { width: auto; }
+  .detail td { border: none; padding: 3px 14px 3px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead no-print">
+    <div class="badge">HR</div>
+    <h1>ผลแบบประเมินผู้สมัครงาน</h1>
+    <div class="puzzle">🧩</div>
+  </header>
+
+  <!-- ---------- login ---------- -->
+  <section id="screen-login">
+    <div class="card">
+      <h2>เข้าสู่ระบบ</h2>
+      <p class="muted">ใช้บัญชีที่สร้างไว้ใน Supabase &gt; Authentication &gt; Users</p>
+      <form id="login-form">
+        <div class="field">
+          <label for="l-email">อีเมล</label>
+          <input type="email" id="l-email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="l-pass">รหัสผ่าน</label>
+          <input type="password" id="l-pass" required autocomplete="current-password">
+        </div>
+        <div id="login-status" class="status err hidden"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">เข้าสู่ระบบ</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ---------- dashboard ---------- -->
+  <section id="screen-data" class="hidden">
+    <div class="card">
+      <div class="toolbar no-print">
+        <input type="text" id="q-search" placeholder="ค้นหาชื่อ / ตำแหน่ง">
+        <select id="q-color" style="width:auto">
+          <option value="">ทุกสี</option>
+          <option value="red">สีแดง</option>
+          <option value="blue">สีฟ้า</option>
+          <option value="yellow">สีเหลือง</option>
+          <option value="green">สีเขียว</option>
+        </select>
+        <button class="btn btn-ghost" id="btn-refresh" type="button">↻ โหลดใหม่</button>
+        <button class="btn btn-ghost" id="btn-csv" type="button">⬇ ดาวน์โหลด CSV</button>
+        <button class="btn btn-ghost" id="btn-logout" type="button" style="margin-left:auto">ออกจากระบบ</button>
+      </div>
+
+      <div class="stat-grid" id="stats"></div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>วันที่</th><th>ชื่อ-นามสกุล</th><th>ตำแหน่ง</th>
+              <th>สีหลัก</th><th>สีรอง</th>
+              <th>แดง</th><th>ฟ้า</th><th>เหลือง</th><th>เขียว</th>
+              <th>ติดต่อ</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="muted" id="count-label" style="margin-top:10px"></p>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var CFG = window.APP_CONFIG, P = window.PROFILES;
+  var el = function (id) { return document.getElementById(id); };
+  var all = [];
+
+  if (!CFG.SUPABASE_URL || CFG.SUPABASE_URL.indexOf("YOUR-PROJECT-REF") > -1) {
+    el("login-status").textContent = "ยังไม่ได้ตั้งค่า Supabase ในไฟล์ config.js";
+    el("login-status").classList.remove("hidden");
+  }
+  var client = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function show(id) {
+    ["screen-login", "screen-data"].forEach(function (s) {
+      el(s).classList.toggle("hidden", s !== id);
+    });
+  }
+
+  // ---------- auth ----------
+  el("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var box = el("login-status");
+    box.classList.add("hidden");
+    client.auth.signInWithPassword({
+      email: el("l-email").value.trim(),
+      password: el("l-pass").value
+    }).then(function (res) {
+      if (res.error) {
+        box.textContent = "เข้าสู่ระบบไม่สำเร็จ: " + res.error.message;
+        box.classList.remove("hidden");
+      } else {
+        show("screen-data");
+        load();
+      }
+    });
+  });
+
+  el("btn-logout").addEventListener("click", function () {
+    client.auth.signOut().then(function () { location.reload(); });
+  });
+
+  // ---------- data ----------
+  function load() {
+    el("rows").innerHTML = '<tr><td colspan="10">กำลังโหลด...</td></tr>';
+    client.from("assessment_responses")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1000)
+      .then(function (res) {
+        if (res.error) {
+          el("rows").innerHTML = '<tr><td colspan="10">โหลดข้อมูลไม่สำเร็จ: ' + esc(res.error.message) + "</td></tr>";
+          return;
+        }
+        all = res.data || [];
+        render();
+      });
+  }
+
+  function filtered() {
+    var q = el("q-search").value.trim().toLowerCase();
+    var c = el("q-color").value;
+    return all.filter(function (r) {
+      if (c && r.primary_color !== c) return false;
+      if (!q) return true;
+      return ((r.full_name || "") + " " + (r.nickname || "") + " " + (r.position || "")).toLowerCase().indexOf(q) > -1;
+    });
+  }
+
+  function render() {
+    var data = filtered();
+
+    // สถิติ
+    var counts = { red: 0, blue: 0, yellow: 0, green: 0 };
+    data.forEach(function (r) { if (counts[r.primary_color] != null) counts[r.primary_color]++; });
+    el("stats").innerHTML =
+      '<div class="stat"><div class="n">' + data.length + '</div><div class="l">ผู้ทำแบบประเมิน</div></div>' +
+      window.COLOR_ORDER.map(function (c) {
+        return '<div class="stat"><div class="n" style="color:' + P[c].hex + '">' + counts[c] +
+               '</div><div class="l">' + P[c].name + " · " + P[c].title.split(" (")[0] + "</div></div>";
+      }).join("");
+
+    // ตาราง
+    if (!data.length) {
+      el("rows").innerHTML = '<tr><td colspan="10">ยังไม่มีข้อมูล</td></tr>';
+    } else {
+      el("rows").innerHTML = data.map(function (r, i) {
+        var s = r.scores || {};
+        return '<tr data-i="' + i + '" style="cursor:pointer">' +
+          "<td>" + new Date(r.created_at).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" }) + "</td>" +
+          "<td>" + esc(r.full_name) + (r.nickname ? " (" + esc(r.nickname) + ")" : "") + "</td>" +
+          "<td>" + esc(r.position) + "</td>" +
+          '<td><span class="dot" style="background:' + (P[r.primary_color] || {}).hex + '"></span>' + ((P[r.primary_color] || {}).name || "-") + "</td>" +
+          "<td>" + ((P[r.secondary_color] || {}).name || "-") + "</td>" +
+          "<td>" + (s.red || 0) + "</td><td>" + (s.blue || 0) + "</td>" +
+          "<td>" + (s.yellow || 0) + "</td><td>" + (s.green || 0) + "</td>" +
+          "<td>" + esc(r.email || r.phone || "-") + "</td>" +
+        "</tr>";
+      }).join("");
+
+      Array.prototype.forEach.call(el("rows").querySelectorAll("tr[data-i]"), function (tr) {
+        tr.addEventListener("click", function () { toggleDetail(tr, data[+tr.dataset.i]); });
+      });
+    }
+
+    el("count-label").textContent = "แสดง " + data.length + " จากทั้งหมด " + all.length + " รายการ";
+  }
+
+  function toggleDetail(tr, r) {
+    var next = tr.nextElementSibling;
+    if (next && next.classList.contains("detail-row")) { next.remove(); return; }
+
+    var ans = r.answers || {};
+    var cells = window.QUESTIONS.map(function (q) {
+      var pick = ans[String(q.no)];
+      var o = pick ? q.options[pick] : null;
+      return "<tr><td><strong>ข้อ " + q.no + ".</strong></td><td>" + esc(pick || "-") + "</td><td>" +
+        (o ? esc(o.text) : "-") + "</td><td>" +
+        (o ? '<span class="dot" style="background:' + P[o.color].hex + '"></span>' + P[o.color].name : "-") +
+        "</td></tr>";
+    }).join("");
+
+    var row = document.createElement("tr");
+    row.className = "detail-row";
+    row.innerHTML = '<td colspan="10" class="detail">' +
+      "<p><strong>" + esc(r.full_name) + "</strong> · " + esc(r.position || "-") +
+      " · ใช้เวลา " + (r.duration_seconds || "-") + " วินาที · " +
+      esc(r.email || "-") + " · " + esc(r.phone || "-") + "</p>" +
+      "<table>" + cells + "</table></td>";
+    tr.after(row);
+  }
+
+  // ---------- CSV ----------
+  el("btn-csv").addEventListener("click", function () {
+    var data = filtered();
+    var head = ["วันที่", "ชื่อ-นามสกุล", "ชื่อเล่น", "ตำแหน่ง", "อีเมล", "เบอร์โทร",
+                "สีหลัก", "สีรอง", "แดง", "ฟ้า", "เหลือง", "เขียว", "เวลา(วินาที)"];
+    window.QUESTIONS.forEach(function (q) { head.push("ข้อ" + q.no); });
+
+    var lines = [head];
+    data.forEach(function (r) {
+      var s = r.scores || {}, a = r.answers || {};
+      var row = [
+        new Date(r.created_at).toLocaleString("th-TH"),
+        r.full_name, r.nickname, r.position, r.email, r.phone,
+        (P[r.primary_color] || {}).name, (P[r.secondary_color] || {}).name,
+        s.red || 0, s.blue || 0, s.yellow || 0, s.green || 0, r.duration_seconds
+      ];
+      window.QUESTIONS.forEach(function (q) { row.push(a[String(q.no)] || ""); });
+      lines.push(row);
+    });
+
+    var csv = "﻿" + lines.map(function (r) {
+      return r.map(function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }).join(",");
+    }).join("\r\n");
+
+    var url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "assessment-" + new Date().toISOString().slice(0, 10) + ".csv";
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+
+  el("btn-refresh").addEventListener("click", load);
+  el("q-search").addEventListener("input", render);
+  el("q-color").addEventListener("change", render);
+
+  // ---------- session เดิม ----------
+  client.auth.getSession().then(function (res) {
+    if (res.data && res.data.session) { show("screen-data"); load(); }
+  });
+})();
+</script>
+</body>
+</html>

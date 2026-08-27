@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แบบประเมินบุคลิกภาพก่อนสัมภาษณ์งาน</title>
+<meta name="description" content="แบบประเมินบุคลิกภาพ 4 สี สำหรับผู้สมัครงานก่อนเข้าสัมภาษณ์">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead no-print">
+    <div class="badge">?</div>
+    <h1 id="app-title">แบบประเมินบุคลิกภาพก่อนสัมภาษณ์งาน</h1>
+    <div class="puzzle">🧩</div>
+  </header>
+
+  <!-- =================== หน้าแรก =================== -->
+  <section id="screen-intro">
+    <div class="card">
+      <h2>เราเป็นคนแบบไหน?</h2>
+      <p class="muted">
+        แบบประเมินนี้มี <strong>9 ข้อ</strong> ใช้เวลาประมาณ <strong>3-5 นาที</strong>
+        ไม่มีข้อไหนถูกหรือผิด ขอให้เลือกข้อที่ “ตรงกับตัวคุณมากที่สุด”
+        ผลลัพธ์จะช่วยให้ทีม <span id="org-name">ฝ่ายทรัพยากรบุคคล</span>
+        เข้าใจสไตล์การทำงานของคุณก่อนเริ่มการสัมภาษณ์
+      </p>
+
+      <div id="config-warning" class="status warn hidden">
+        ⚠️ ยังไม่ได้ตั้งค่า Supabase ใน <code>config.js</code> — ระบบจะทำงานในโหมดทดสอบ (ไม่บันทึกผล)
+      </div>
+
+      <form id="intro-form" autocomplete="on">
+        <div class="field">
+          <label for="f-name">ชื่อ-นามสกุล <span class="req">*</span></label>
+          <input type="text" id="f-name" name="name" required placeholder="เช่น สมชาย ใจดี">
+        </div>
+
+        <div class="field">
+          <label for="f-nickname">ชื่อเล่น</label>
+          <input type="text" id="f-nickname" name="nickname" placeholder="เช่น ชาย">
+        </div>
+
+        <div class="field">
+          <label for="f-position">ตำแหน่งที่สมัคร <span class="req">*</span></label>
+          <input type="text" id="f-position" name="position" required placeholder="เช่น เจ้าหน้าที่การตลาด">
+        </div>
+
+        <div class="field">
+          <label for="f-email">อีเมล <span id="email-req" class="req hidden">*</span></label>
+          <input type="email" id="f-email" name="email" placeholder="you@example.com">
+        </div>
+
+        <div class="field">
+          <label for="f-phone">เบอร์โทรศัพท์</label>
+          <input type="tel" id="f-phone" name="phone" placeholder="08X-XXX-XXXX">
+        </div>
+
+        <label class="consent">
+          <input type="checkbox" required>
+          <span>
+            ข้าพเจ้ายินยอมให้เก็บและใช้ข้อมูลนี้เพื่อประกอบการพิจารณารับสมัครงานเท่านั้น
+            และรับทราบว่าผลการประเมินเป็นเพียงข้อมูลประกอบ ไม่ใช่การตัดสินความสามารถ
+          </span>
+        </label>
+
+        <div class="btn-row">
+          <button type="submit" class="btn btn-primary">เริ่มทำแบบประเมิน →</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- =================== หน้าคำถาม =================== -->
+  <section id="screen-quiz" class="hidden">
+    <div class="card">
+      <div class="progress"><i id="progress-fill"></i></div>
+      <div class="progress-label" id="progress-label">ข้อ 1 จาก 9</div>
+
+      <div class="q-head">
+        <div class="q-num" id="q-num">1</div>
+        <p class="q-title">ข้อใดตรงกับตัวคุณมากที่สุด?</p>
+      </div>
+
+      <div class="options" id="options"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-ghost hidden" id="btn-back">← ย้อนกลับ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== หน้าผลลัพธ์ =================== -->
+  <section id="screen-result" class="hidden">
+
+    <div class="hero" id="hero">
+      <p class="kicker" id="hero-kicker">บุคลิกภาพเด่นของคุณคือ</p>
+      <h2 id="hero-title">—</h2>
+      <p class="tag" id="hero-tag">—</p>
+    </div>
+
+    <div id="save-status" class="status warn">กำลังบันทึกผล...</div>
+
+    <div class="card" id="result-detail">
+      <p class="pill" id="res-name">—</p>
+
+      <div class="sect">
+        <h3>📊 คะแนนแต่ละสี (เต็ม 9)</h3>
+        <div class="bars" id="bars"></div>
+      </div>
+
+      <div class="sect">
+        <h3>🧭 ภาพรวม</h3>
+        <p id="res-summary">—</p>
+      </div>
+
+      <div class="sect hidden" id="res-blend">
+        <h3>🎨 สีรองที่ผสมอยู่</h3>
+        <p id="res-blend-text">—</p>
+      </div>
+
+      <div class="sect">
+        <h3>💪 จุดแข็ง</h3>
+        <ul id="res-strengths"></ul>
+      </div>
+
+      <div class="sect">
+        <h3>⚠️ สิ่งที่ควรระวัง</h3>
+        <ul id="res-watchouts"></ul>
+      </div>
+
+      <div class="sect">
+        <h3>🧑‍💻 สไตล์การทำงาน</h3>
+        <p id="res-workstyle">—</p>
+      </div>
+
+      <div class="sect">
+        <h3>🎯 ลักษณะงานที่มักเหมาะ</h3>
+        <p id="res-roles">—</p>
+      </div>
+
+      <div class="btn-row no-print">
+        <button type="button" class="btn btn-primary" id="btn-print">🖨️ บันทึก / พิมพ์ผล</button>
+        <button type="button" class="btn btn-ghost" id="btn-restart">ทำแบบประเมินใหม่</button>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot no-print">
+    แบบประเมินบุคลิกภาพ 4 สี · ใช้ประกอบการสัมภาษณ์งานเท่านั้น
+  </p>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
