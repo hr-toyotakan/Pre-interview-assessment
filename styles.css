@@ -86,14 +86,10 @@ html, body {
 h2 { font-size: 24px; margin: 0 0 6px; }
 .muted { color: var(--ink-soft); font-size: 15px; }
 
-/* เน้นข้อความสำคัญ แบบปากกาไฮไลต์ */
+/* เน้นข้อความสำคัญ ตัวหนาอย่างเดียว */
 .emph {
   font-weight: 800;
-  font-size: 1.05em;
   color: var(--ink);
-  background: linear-gradient(180deg, transparent 55%, #ffd97d 55%);
-  padding: 0 3px;
-  border-radius: 2px;
   white-space: nowrap;
 }
 
