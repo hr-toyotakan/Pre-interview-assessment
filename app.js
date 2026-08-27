@@ -293,7 +293,8 @@
     if (mode === false) mode = "none";
 
     if (mode === "none") renderThanks();
-    else if (mode === "color") renderColorOnly(order);
+    else if (mode === "color") renderColorOnly(s, order, false);
+    else if (mode === "chart") renderColorOnly(s, order, true);
     else renderResult(s, order);
     show("screen-result");
     save(payload);
@@ -339,8 +340,8 @@
     el("thanks-note").classList.remove("hidden");
   }
 
-  // บอกแค่ว่าได้สีอะไร ไม่แสดงคะแนนหรือคำอธิบายใด ๆ
-  function renderColorOnly(order) {
+  // บอกสีที่ได้ + กราฟคะแนน (ถ้า withChart) แต่ไม่มีคำอธิบายบุคลิกภาพ
+  function renderColorOnly(s, order, withChart) {
     var p = PROFILES[order[0]];
     var hero = el("hero");
     hero.style.background =
@@ -352,8 +353,32 @@
     el("thanks-name").textContent = state.profile.full_name +
       (state.profile.position ? " · " + state.profile.position : "");
 
+    if (withChart) {
+      paintBars("thanks-bars", s, order);
+      el("thanks-bars-sect").classList.remove("hidden");
+    } else {
+      el("thanks-bars-sect").classList.add("hidden");
+    }
+
     el("result-detail").classList.add("hidden");
     el("thanks-note").classList.remove("hidden");
+  }
+
+  // วาดแถบคะแนนของทั้ง 4 สี เรียงจากมากไปน้อย
+  function paintBars(containerId, s, order) {
+    var box = el(containerId);
+    box.innerHTML = "";
+    order.forEach(function (c) {
+      var prof = PROFILES[c];
+      var pct = (s[c] / QUESTIONS.length) * 100;
+      var row = document.createElement("div");
+      row.className = "bar-row";
+      row.innerHTML =
+        '<div class="bar-name">' + prof.name + "</div>" +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + "%;background:" + prof.hex + '"></div></div>' +
+        '<div class="bar-val">' + s[c] + "</div>";
+      box.appendChild(row);
+    });
   }
 
   function renderResult(s, order) {
@@ -366,20 +391,7 @@
     el("hero-title").textContent = p.name + " · " + p.title;
     el("hero-tag").textContent = p.tagline;
 
-    // แถบคะแนน
-    var bars = el("bars");
-    bars.innerHTML = "";
-    order.forEach(function (c) {
-      var prof = PROFILES[c];
-      var pct = (s[c] / QUESTIONS.length) * 100;
-      var row = document.createElement("div");
-      row.className = "bar-row";
-      row.innerHTML =
-        '<div class="bar-name">' + prof.name + "</div>" +
-        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + "%;background:" + prof.hex + '"></div></div>' +
-        '<div class="bar-val">' + s[c] + "</div>";
-      bars.appendChild(row);
-    });
+    paintBars("bars", s, order);
 
     el("res-summary").textContent = p.summary;
     fillList("res-strengths", p.strengths);

@@ -27,8 +27,7 @@
       <p class="muted">
         แบบประเมินนี้มี <strong>9 ข้อ</strong> ไม่มีข้อไหนถูกหรือผิด
         ขอให้เลือกข้อที่ “ตรงกับตัวคุณมากที่สุด” โดยไม่ต้องคิดนาน
-        ผลลัพธ์จะช่วยให้ทีม <span id="org-name">ฝ่ายทรัพยากรบุคคล</span>
-        เข้าใจสไตล์การทำงานของคุณ
+        ผลลัพธ์จะช่วยให้<span id="org-name">แผนกบุคคล</span>เข้าใจสไตล์การทำงานของคุณ
       </p>
 
       <div class="rules" id="rules">
@@ -73,7 +72,7 @@
         <label class="consent">
           <input type="checkbox" required>
           <span>
-            ข้าพเจ้ายินยอมให้เก็บและใช้ข้อมูลนี้เพื่อประกอบการพิจารณารับสมัครงานเท่านั้น
+            ข้าพเจ้ายินยอมให้เก็บและใช้ข้อมูลนี้
             และรับทราบว่าผลการประเมินเป็นเพียงข้อมูลประกอบ ไม่ใช่การตัดสินความสามารถ
           </span>
         </label>
@@ -133,6 +132,11 @@
     <!-- แสดงเมื่อ SHOW_RESULT_TO_CANDIDATE = false -->
     <div class="card hidden" id="thanks-note">
       <p class="pill" id="thanks-name">—</p>
+      <div class="sect hidden" id="thanks-bars-sect">
+        <h3>📊 คะแนนแต่ละสี (เต็ม 9)</h3>
+        <div class="bars" id="thanks-bars"></div>
+      </div>
+
       <div class="sect">
         <h3>✅ เราได้รับคำตอบของคุณเรียบร้อยแล้ว</h3>
         <p class="muted" id="time-used">⏱ ใช้เวลาทำทั้งหมด —</p>
