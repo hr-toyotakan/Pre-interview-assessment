@@ -186,49 +186,68 @@ input:focus, select:focus, textarea:focus {
 .rules ul { margin: 8px 0 0; padding-left: 20px; }
 .rules li { margin-bottom: 3px; }
 
-/* ---------- timer ---------- */
+/* ---------- นาฬิกานับถอยหลังรายข้อ ---------- */
 
-.timer {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
+.countdown {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  margin: 20px auto 4px;
 }
-.timer-track {
-  flex: 1;
-  height: 10px;
-  background: var(--line);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.timer-track > i {
-  display: block;
-  height: 100%;
+
+.countdown .ring {
   width: 100%;
-  border-radius: 999px;
-  background: var(--green);
-  transition: width .1s linear, background .3s;
+  height: 100%;
+  transform: rotate(-90deg);   /* เริ่มนับจากด้านบน */
 }
-.timer-num {
-  min-width: 52px;
-  text-align: right;
+.ring-bg, .ring-fg {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.ring-bg { stroke: var(--line); }
+.ring-fg {
+  stroke: var(--green);
+  stroke-dasharray: 276.46;    /* 2 * PI * 44 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .1s linear, stroke .3s;
+}
+
+.countdown-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.countdown-num {
+  font-size: 36px;
   font-weight: 800;
-  font-size: 20px;
   color: var(--green);
   font-variant-numeric: tabular-nums;
   transition: color .3s;
 }
-.timer-num small { font-size: 12px; font-weight: 600; margin-left: 3px; opacity: .75; }
+.countdown-unit {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
 
-.timer.warn .timer-track > i { background: var(--yellow); }
-.timer.warn .timer-num { color: #b8860b; }
+.countdown.warn .ring-fg { stroke: var(--yellow); }
+.countdown.warn .countdown-num { color: #b8860b; }
 
-.timer.danger .timer-track > i { background: var(--red); }
-.timer.danger .timer-num { color: var(--red); animation: pulse .6s ease-in-out infinite; }
+.countdown.danger .ring-fg { stroke: var(--red); }
+.countdown.danger .countdown-num {
+  color: var(--red);
+  animation: pulse .6s ease-in-out infinite;
+}
 
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.14); }
+  50%      { transform: scale(1.16); }
 }
 
 .retry-tag {
@@ -365,6 +384,8 @@ tbody tr:hover { background: #fafbff; }
   .masthead h1 { font-size: 15px; line-height: 1.35; }
   .masthead .badge { width: 30px; height: 30px; flex-basis: 30px; font-size: 15px; border-width: 2px; }
   .masthead .puzzle { font-size: 20px; }
+  .countdown { width: 92px; height: 92px; margin-top: 14px; }
+  .countdown-num { font-size: 30px; }
   .card { padding: 18px 14px; }
   .hero { padding: 24px 18px; }
   .hero h2 { font-size: 23px; }

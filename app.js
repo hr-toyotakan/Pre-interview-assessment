@@ -246,7 +246,9 @@
     var left = Math.max(0, state.deadline - Date.now());
     var box = el("timer");
 
-    el("timer-fill").style.width = (left / limit * 100) + "%";
+    // วงแหวนหดลงตามเวลาที่เหลือ (เส้นรอบวง = 2 * PI * 44)
+    var CIRC = 276.46;
+    el("ring-fg").style.strokeDashoffset = CIRC * (1 - left / limit);
     el("timer-num").textContent = Math.ceil(left / 1000);
 
     box.classList.toggle("warn", left <= limit * 0.5 && left > 5000);

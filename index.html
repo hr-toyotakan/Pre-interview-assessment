@@ -94,9 +94,15 @@
         <span class="elapsed">⏱ เวลารวม <strong id="elapsed">0:00</strong></span>
       </div>
 
-      <div class="timer hidden" id="timer">
-        <div class="timer-track"><i id="timer-fill"></i></div>
-        <div class="timer-num"><span id="timer-num">15</span><small>วิ</small></div>
+      <div class="countdown hidden" id="timer">
+        <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="ring-bg" cx="50" cy="50" r="44"></circle>
+          <circle class="ring-fg" id="ring-fg" cx="50" cy="50" r="44"></circle>
+        </svg>
+        <div class="countdown-face">
+          <span class="countdown-num" id="timer-num">15</span>
+          <span class="countdown-unit">วินาที</span>
+        </div>
       </div>
 
       <div class="q-head">
