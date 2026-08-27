@@ -77,16 +77,21 @@
       el("f-email").required = true;
     }
 
-    if (Array.isArray(CFG.POSITIONS) && CFG.POSITIONS.length) {
-      var sel = document.createElement("select");
-      sel.id = "f-position";
-      sel.required = true;
-      sel.innerHTML = '<option value="">-- เลือกตำแหน่ง --</option>' +
-        CFG.POSITIONS.map(function (p) {
-          return '<option value="' + escapeHtml(p) + '">' + escapeHtml(p) + "</option>";
-        }).join("");
-      var old = el("f-position");
-      old.parentNode.replaceChild(sel, old);
+    if (CFG.ASK_POSITION) {
+      el("position-field").classList.remove("hidden");
+      el("f-position").required = true;
+
+      if (Array.isArray(CFG.POSITIONS) && CFG.POSITIONS.length) {
+        var sel = document.createElement("select");
+        sel.id = "f-position";
+        sel.required = true;
+        sel.innerHTML = '<option value="">-- เลือกตำแหน่ง --</option>' +
+          CFG.POSITIONS.map(function (p) {
+            return '<option value="' + escapeHtml(p) + '">' + escapeHtml(p) + "</option>";
+          }).join("");
+        var old = el("f-position");
+        old.parentNode.replaceChild(sel, old);
+      }
     }
 
     if (!isConfigured()) {
@@ -98,7 +103,7 @@
       state.profile = {
         full_name: el("f-name").value.trim(),
         nickname: el("f-nickname").value.trim(),
-        position: el("f-position").value.trim(),
+        position: CFG.ASK_POSITION ? el("f-position").value.trim() : null,
         email: el("f-email").value.trim(),
         phone: el("f-phone").value.trim(),
       };
@@ -175,11 +180,14 @@
       user_agent: navigator.userAgent,
     });
 
-    if (CFG.SHOW_RESULT_TO_CANDIDATE === false) {
-      renderThanks();
-    } else {
-      renderResult(s, order);
-    }
+    // "full" = เห็นทั้งหมด | "color" = บอกแค่สี | "none"/false = ไม่บอกสี
+    var mode = CFG.SHOW_RESULT_TO_CANDIDATE;
+    if (mode === true) mode = "full";
+    if (mode === false) mode = "none";
+
+    if (mode === "none") renderThanks();
+    else if (mode === "color") renderColorOnly(order);
+    else renderResult(s, order);
     show("screen-result");
     save(payload);
   }
@@ -216,6 +224,23 @@
     el("hero-kicker").textContent = "ส่งแบบประเมินเรียบร้อย";
     el("hero-title").textContent = "ขอบคุณที่สละเวลา 🙏";
     el("hero-tag").textContent = "ทีมงานจะนำข้อมูลไปใช้ประกอบการสัมภาษณ์ต่อไป";
+
+    el("thanks-name").textContent = state.profile.full_name +
+      (state.profile.position ? " · " + state.profile.position : "");
+
+    el("result-detail").classList.add("hidden");
+    el("thanks-note").classList.remove("hidden");
+  }
+
+  // บอกแค่ว่าได้สีอะไร ไม่แสดงคะแนนหรือคำอธิบายใด ๆ
+  function renderColorOnly(order) {
+    var p = PROFILES[order[0]];
+    var hero = el("hero");
+    hero.style.background =
+      "linear-gradient(135deg, " + p.hex + " 0%, " + shade(p.hex, -18) + " 100%)";
+    el("hero-kicker").textContent = "บุคลิกภาพเด่นของคุณคือ";
+    el("hero-title").textContent = p.name;
+    el("hero-tag").textContent = p.title;
 
     el("thanks-name").textContent = state.profile.full_name +
       (state.profile.position ? " · " + state.profile.position : "");

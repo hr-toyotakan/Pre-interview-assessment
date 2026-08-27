@@ -74,7 +74,7 @@
         <table>
           <thead>
             <tr>
-              <th>วันที่</th><th>ชื่อ-นามสกุล</th><th>ตำแหน่ง</th>
+              <th>วันที่</th><th>ชื่อ-นามสกุล</th><th class="col-position">ตำแหน่ง</th>
               <th>สีหลัก</th><th>สีรอง</th>
               <th>แดง</th><th>ฟ้า</th><th>เหลือง</th><th>เขียว</th>
               <th>ติดต่อ</th>
@@ -189,7 +189,7 @@
         return '<tr data-i="' + i + '" style="cursor:pointer">' +
           "<td>" + new Date(r.created_at).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" }) + "</td>" +
           "<td>" + esc(r.full_name) + (r.nickname ? " (" + esc(r.nickname) + ")" : "") + "</td>" +
-          "<td>" + esc(r.position) + "</td>" +
+          '<td class="col-position">' + esc(r.position) + "</td>" +
           '<td><span class="dot" style="background:' + (P[r.primary_color] || {}).hex + '"></span>' + ((P[r.primary_color] || {}).name || "-") + "</td>" +
           "<td>" + ((P[r.secondary_color] || {}).name || "-") + "</td>" +
           "<td>" + (s.red || 0) + "</td><td>" + (s.blue || 0) + "</td>" +
@@ -202,6 +202,12 @@
         tr.addEventListener("click", function () { toggleDetail(tr, data[+tr.dataset.i]); });
       });
     }
+
+    // ซ่อนคอลัมน์ "ตำแหน่ง" ถ้าไม่มีใครกรอกมาเลย (ปิดถามในหน้าแบบประเมิน)
+    var hasPosition = data.some(function (r) { return r.position; });
+    Array.prototype.forEach.call(document.querySelectorAll(".col-position"), function (c) {
+      c.style.display = hasPosition ? "" : "none";
+    });
 
     el("count-label").textContent = "แสดง " + data.length + " จากทั้งหมด " + all.length + " รายการ";
   }
