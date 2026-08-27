@@ -93,30 +93,12 @@
 
   // ---------- หน้าแรก ----------
 
-  // ใช้สีองค์กรจาก config กับทั้งหน้า
-  function applyBrand() {
-    var c = CFG.BRAND_COLOR;
-    if (!c || !/^#[0-9a-fA-F]{6}$/.test(c)) return;
-    var root = document.documentElement.style;
-    root.setProperty("--brand", c);
-    root.setProperty("--brand-dark", shade(c, -28));
-    root.setProperty("--brand-tint", mixWhite(c, 0.92));
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", c);
-  }
-
   function initIntro() {
-    applyBrand();
-
     if (CFG.FORM_TITLE) {
       el("app-title").textContent = CFG.FORM_TITLE;
       document.title = CFG.FORM_TITLE;
     }
-    if (CFG.ORG_NAME) {
-      el("org-name").textContent = CFG.ORG_NAME;
-      el("org-name-top").textContent = CFG.ORG_NAME;
-    }
-    if (CFG.BRAND_MARK) el("brand-mark").textContent = CFG.BRAND_MARK;
+    if (CFG.ORG_NAME) el("org-name").textContent = CFG.ORG_NAME;
 
     if (CFG.REQUIRE_EMAIL) {
       el("email-req").classList.remove("hidden");
@@ -344,11 +326,10 @@
 
   // ซ่อนผลลัพธ์จากผู้สมัคร (ใช้เมื่อต้องการให้ HR ดูผลเท่านั้น)
   function renderThanks() {
-    var brand = (CFG.BRAND_COLOR && /^#[0-9a-fA-F]{6}$/.test(CFG.BRAND_COLOR)) ? CFG.BRAND_COLOR : "#1f3b73";
     var hero = el("hero");
-    hero.style.background = "linear-gradient(135deg, " + brand + " 0%, " + shade(brand, -28) + " 100%)";
+    hero.style.background = "linear-gradient(135deg, #f79ea8 0%, #f2894f 100%)";
     el("hero-kicker").textContent = "ส่งแบบประเมินเรียบร้อย";
-    el("hero-title").textContent = "ขอบคุณที่สละเวลา";
+    el("hero-title").textContent = "ขอบคุณที่สละเวลา 🙏";
     el("hero-tag").textContent = "ทีมงานจะนำข้อมูลไปใช้ประกอบการสัมภาษณ์ต่อไป";
 
     el("thanks-name").textContent = state.profile.full_name +
@@ -364,7 +345,7 @@
     var hero = el("hero");
     hero.style.background =
       "linear-gradient(135deg, " + p.hex + " 0%, " + shade(p.hex, -18) + " 100%)";
-    el("hero-kicker").textContent = "บุคลิกภาพเด่นของท่าน";
+    el("hero-kicker").textContent = "บุคลิกภาพเด่นของคุณคือ";
     el("hero-title").textContent = p.name;
     el("hero-tag").classList.add("hidden");   // ไม่บอกชื่อบุคลิก บอกแค่ชื่อสี
 
@@ -381,9 +362,8 @@
 
     var hero = el("hero");
     hero.style.background = "linear-gradient(135deg, " + p.hex + " 0%, " + shade(p.hex, -18) + " 100%)";
-    el("hero-kicker").textContent = "บุคลิกภาพเด่นของท่าน";
+    el("hero-kicker").textContent = "บุคลิกภาพเด่นของคุณคือ";
     el("hero-title").textContent = p.name + " · " + p.title;
-    el("hero-tag").classList.remove("hidden");
     el("hero-tag").textContent = p.tagline;
 
     // แถบคะแนน
@@ -437,13 +417,6 @@
     return String(str).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
-  }
-
-  // ผสมกับสีขาว: ratio 0.92 = ขาว 92% ใช้ทำสีพื้นอ่อน
-  function mixWhite(hex, ratio) {
-    var n = parseInt(hex.slice(1), 16);
-    var f = function (v) { return Math.round(v + (255 - v) * ratio); };
-    return "rgb(" + f((n >> 16) & 255) + "," + f((n >> 8) & 255) + "," + f(n & 255) + ")";
   }
 
   function shade(hex, percent) {

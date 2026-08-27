@@ -13,16 +13,9 @@ window.APP_CONFIG = {
   SUPABASE_URL: "https://puywpoetohlbgenhjhuo.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_qEXl0wnQ_4kQcE34nrk6Cw_RsO3I4u2",
 
-  // ชื่อองค์กร / ชื่อแบบประเมิน (แสดงบนแถบหัวเว็บ)
+  // ชื่อองค์กร / ชื่อแบบประเมิน (แสดงบนหน้าแรก)
   ORG_NAME: "ฝ่ายทรัพยากรบุคคล",
   FORM_TITLE: "แบบประเมินบุคลิกภาพ",
-
-  // อักษรย่อในกรอบมุมซ้ายบน (1-3 ตัวอักษร)
-  BRAND_MARK: "HR",
-
-  // สีองค์กร ใช้กับแถบหัวเว็บ ปุ่ม และไฮไลต์ต่าง ๆ
-  // ตัวอย่าง: "#1f3b73" น้ำเงินเข้ม | "#b31217" แดง | "#1f5c3a" เขียวเข้ม | "#2b2b2b" เทาเข้ม
-  BRAND_COLOR: "#1f3b73",
 
   // true = ถามตำแหน่งที่สมัครในหน้าแรก
   ASK_POSITION: false,

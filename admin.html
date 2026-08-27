@@ -8,26 +8,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
-<meta name="theme-color" content="#1f3b73">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .wrap { max-width: 1120px; }
-  .appbar-inner { max-width: 1120px; }
+  .wrap { max-width: 1080px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .stat { background: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+  .stat .n { font-size: 26px; font-weight: 800; line-height: 1.2; }
+  .stat .l { font-size: 13px; color: var(--ink-soft); }
+  .detail { background: #fbfcff; border-left: 3px solid var(--blue); padding: 14px 16px; font-size: 14px; white-space: normal; }
+  .detail table { width: auto; }
+  .detail td { border: none; padding: 3px 14px 3px 0; }
 </style>
 </head>
 <body>
-
-<header class="appbar no-print">
-  <div class="appbar-inner">
-    <div class="brand-mark" id="brand-mark">HR</div>
-    <div class="brand-text">
-      <span class="brand-org" id="org-name-top">ฝ่ายทรัพยากรบุคคล</span>
-      <span class="brand-title">ผลแบบประเมินผู้สมัครงาน</span>
-    </div>
-  </div>
-</header>
-
 <div class="wrap">
+
+  <header class="masthead no-print">
+    <div class="badge">HR</div>
+    <h1>ผลแบบประเมินผู้สมัครงาน</h1>
+    <div class="puzzle">🧩</div>
+  </header>
 
   <!-- ---------- login ---------- -->
   <section id="screen-login">
@@ -98,23 +98,6 @@
   var CFG = window.APP_CONFIG, P = window.PROFILES;
   var el = function (id) { return document.getElementById(id); };
   var all = [];
-
-  // สีองค์กรจาก config
-  (function applyBrand() {
-    var c = CFG.BRAND_COLOR;
-    if (c && /^#[0-9a-fA-F]{6}$/.test(c)) {
-      var n = parseInt(c.slice(1), 16);
-      var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-      var dark = function (v) { return Math.max(0, Math.round(v * 0.72)); };
-      var tint = function (v) { return Math.round(v + (255 - v) * 0.92); };
-      var s = document.documentElement.style;
-      s.setProperty("--brand", c);
-      s.setProperty("--brand-dark", "rgb(" + dark(r) + "," + dark(g) + "," + dark(b) + ")");
-      s.setProperty("--brand-tint", "rgb(" + tint(r) + "," + tint(g) + "," + tint(b) + ")");
-    }
-    if (CFG.ORG_NAME) el("org-name-top").textContent = CFG.ORG_NAME;
-    if (CFG.BRAND_MARK) el("brand-mark").textContent = CFG.BRAND_MARK;
-  })();
 
   if (!CFG.SUPABASE_URL || CFG.SUPABASE_URL.indexOf("YOUR-PROJECT-REF") > -1) {
     el("login-status").textContent = "ยังไม่ได้ตั้งค่า Supabase ในไฟล์ config.js";
