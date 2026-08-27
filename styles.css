@@ -163,6 +163,76 @@ input:focus, select:focus, textarea:focus {
 }
 .progress-label { font-size: 14px; color: var(--ink-soft); text-align: right; }
 
+/* ---------- rules box (หน้าแรก) ---------- */
+
+.rules {
+  margin-top: 18px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  font-size: 15px;
+  color: #7c4a12;
+}
+.rules ul { margin: 8px 0 0; padding-left: 20px; }
+.rules li { margin-bottom: 3px; }
+
+/* ---------- timer ---------- */
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.timer-track {
+  flex: 1;
+  height: 10px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.timer-track > i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--green);
+  transition: width .1s linear, background .3s;
+}
+.timer-num {
+  min-width: 52px;
+  text-align: right;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+  transition: color .3s;
+}
+.timer-num small { font-size: 12px; font-weight: 600; margin-left: 3px; opacity: .75; }
+
+.timer.warn .timer-track > i { background: var(--yellow); }
+.timer.warn .timer-num { color: #b8860b; }
+
+.timer.danger .timer-track > i { background: var(--red); }
+.timer.danger .timer-num { color: var(--red); animation: pulse .6s ease-in-out infinite; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.14); }
+}
+
+.retry-tag {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fdecee;
+  color: var(--red);
+}
+
 /* ---------- question ---------- */
 
 .q-head { display: flex; align-items: center; gap: 12px; margin: 18px 0 4px; }

@@ -14,9 +14,19 @@
   var state = {
     profile: null,      // ข้อมูลผู้ทำแบบประเมิน
     answers: {},        // { "1": "ก", ... }
-    index: 0,           // ข้อที่กำลังทำ (0-based)
+    queue: [],          // คิวข้อที่ยังต้องทำ (ข้อที่ตอบไม่ทันจะถูกต่อท้ายคิว)
+    current: null,      // ข้อที่กำลังแสดง (index ของ QUESTIONS)
+    seen: {},           // ข้อที่เคยแสดงไปแล้ว ใช้ติดป้าย "ตอบไม่ทัน"
+    locked: false,      // true = กำลังเปลี่ยนข้อ กดเลือกไม่ได้
+    timerId: null,
+    deadline: 0,
     startedAt: null,
   };
+
+  function timeLimit() {
+    var n = Number(CFG.QUESTION_TIME_LIMIT);
+    return isFinite(n) && n > 0 ? n : 0;
+  }
 
   var el = function (id) { return document.getElementById(id); };
 
@@ -98,6 +108,12 @@
       el("config-warning").classList.remove("hidden");
     }
 
+    if (timeLimit()) {
+      el("rule-seconds").textContent = timeLimit();
+    } else {
+      el("rules").classList.add("hidden");
+    }
+
     el("intro-form").addEventListener("submit", function (e) {
       e.preventDefault();
       state.profile = {
@@ -108,22 +124,41 @@
         phone: el("f-phone").value.trim(),
       };
       state.startedAt = Date.now();
-      state.index = 0;
       state.answers = {};
+      state.seen = {};
+      state.queue = QUESTIONS.map(function (_, i) { return i; });
       show("screen-quiz");
-      renderQuestion();
+      nextQuestion();
     });
   }
 
   // ---------- คำถาม ----------
 
-  function renderQuestion() {
-    var q = QUESTIONS[state.index];
-    var total = QUESTIONS.length;
+  // หยิบข้อถัดไปจากคิว ถ้าคิวหมด = ตอบครบทุกข้อแล้ว
+  function nextQuestion() {
+    stopTimer();
+    el("timeout-msg").classList.add("hidden");
+    state.locked = false;
 
-    el("progress-fill").style.width = ((state.index) / total * 100) + "%";
-    el("progress-label").textContent = "ข้อ " + (state.index + 1) + " จาก " + total;
+    if (!state.queue.length) { finish(); return; }
+
+    state.current = state.queue.shift();
+    renderQuestion();
+    startTimer();
+  }
+
+  function renderQuestion() {
+    var q = QUESTIONS[state.current];
+    var total = QUESTIONS.length;
+    var done = Object.keys(state.answers).length;
+
+    el("progress-fill").style.width = (done / total * 100) + "%";
+    el("progress-label").textContent = "ตอบแล้ว " + done + " จาก " + total + " ข้อ";
     el("q-num").textContent = q.no;
+
+    // เคยแสดงข้อนี้แล้ว = เป็นข้อที่ตอบไม่ทันแล้ววนกลับมา
+    el("retry-tag").classList.toggle("hidden", !state.seen[state.current]);
+    state.seen[state.current] = true;
 
     var box = el("options");
     box.innerHTML = "";
@@ -132,38 +167,68 @@
       if (!opt) return;
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "opt" + (state.answers[String(q.no)] === k ? " selected" : "");
+      btn.className = "opt";
       btn.innerHTML = '<span class="key">' + k + "</span><span>" + escapeHtml(opt.text) + "</span>";
       btn.addEventListener("click", function () { choose(k); });
       box.appendChild(btn);
     });
-
-    el("btn-back").classList.toggle("hidden", state.index === 0);
   }
 
   function choose(k) {
-    var q = QUESTIONS[state.index];
-    state.answers[String(q.no)] = k;
+    if (state.locked) return;
+    state.locked = true;
+    stopTimer();
+
+    state.answers[String(QUESTIONS[state.current].no)] = k;
 
     Array.prototype.forEach.call(el("options").children, function (c) {
       c.classList.toggle("selected", c.querySelector(".key").textContent === k);
     });
 
-    setTimeout(function () {
-      if (state.index < QUESTIONS.length - 1) {
-        state.index += 1;
-        renderQuestion();
-      } else {
-        finish();
-      }
-    }, 220);
+    setTimeout(nextQuestion, 250);
   }
 
-  function back() {
-    if (state.index > 0) {
-      state.index -= 1;
-      renderQuestion();
-    }
+  // ---------- ตัวจับเวลารายข้อ ----------
+
+  function startTimer() {
+    var limit = timeLimit();
+    var box = el("timer");
+
+    if (!limit) { box.classList.add("hidden"); return; }
+
+    box.classList.remove("hidden");
+    state.deadline = Date.now() + limit * 1000;
+    tick();
+    state.timerId = setInterval(tick, 100);
+  }
+
+  function stopTimer() {
+    if (state.timerId) { clearInterval(state.timerId); state.timerId = null; }
+  }
+
+  function tick() {
+    var limit = timeLimit() * 1000;
+    var left = Math.max(0, state.deadline - Date.now());
+    var box = el("timer");
+
+    el("timer-fill").style.width = (left / limit * 100) + "%";
+    el("timer-num").textContent = Math.ceil(left / 1000);
+
+    box.classList.toggle("warn", left <= limit * 0.5 && left > 5000);
+    box.classList.toggle("danger", left <= 5000);
+
+    if (left <= 0) { stopTimer(); onTimeout(); }
+  }
+
+  // หมดเวลาโดยยังไม่ได้เลือก -> ต่อท้ายคิวไว้ให้วนกลับมาทำใหม่
+  function onTimeout() {
+    if (state.locked) return;
+    state.locked = true;
+
+    state.queue.push(state.current);
+    el("timeout-msg").classList.remove("hidden");
+
+    setTimeout(nextQuestion, 1400);
   }
 
   // ---------- สรุปผล + บันทึก ----------
@@ -323,7 +388,6 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     initIntro();
-    el("btn-back").addEventListener("click", back);
     el("btn-print").addEventListener("click", function () { window.print(); });
     el("btn-restart").addEventListener("click", function () { location.reload(); });
   });
